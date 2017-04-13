@@ -39,6 +39,15 @@ def preprocessAtari(frame):
     frame*= (1. / 255.)
     return frame
 
+def preprocessRle(frame):
+    # frame = frame[34:34 + 160, :160]
+    frame = cv2.resize(frame, (80, 80))
+    frame = cv2.resize(frame, (42, 42))
+    frame = frame.mean(2)
+    frame = frame.astype(np.float32)
+    frame*= (1. / 255.)
+    return frame
+
 # TODO: check the order rgb to confirm
 def rgb2gray(rgb):
     gray_image     = 0.2126 * rgb[..., 0]

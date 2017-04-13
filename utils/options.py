@@ -18,7 +18,8 @@ CONFIGS = [
 [ "dqn",      "atari-ram", "Pong-ram-v0",              "mlp",      "sequential"],  # 2
 [ "dqn",      "atari",     "PongDeterministic-v3",     "cnn",      "sequential"],  # 3
 [ "dqn",      "atari",     "BreakoutDeterministic-v3", "cnn",      "sequential"],  # 4
-[ "a3c",      "atari",     "PongDeterministic-v3",     "a3c-cnn",  "none"      ]   # 5
+[ "a3c",      "atari",     "PongDeterministic-v3",     "a3c-cnn",  "none"      ],  # 5
+[ "dqn",      "rle",       "MortalKombat-v0",          "cnn",      "sequential"],  # 6
 ]
 
 class Params(object):   # NOTE: shared across all modules
@@ -26,7 +27,7 @@ class Params(object):   # NOTE: shared across all modules
         self.verbose     = 0            # 0(warning) | 1(info) | 2(debug)
 
         # training signature
-        self.machine     = "daim"       # "machine_id"
+        self.machine     = "nadav-PC"       # "machine_id"
         self.timestamp   = "17040900"   # "yymmdd##"
         # training configuration
         self.mode        = 1            # 1(train) | 2(test model_file)
@@ -101,14 +102,14 @@ class EnvParams(Params):    # settings for simulation environment
             pass
         elif self.env_type == "atari-ram":
             pass
-        elif self.env_type == "atari":
+        elif self.env_type == "atari" or self.env_type == "rle":
             self.hei_state = 42
             self.wid_state = 42
             self.preprocess_mode = 3    # 0(nothing) | 1(rgb2gray) | 2(rgb2y) | 3(crop&resize)
         elif self.env_type == "lab":
             pass
         else:
-            assert False, "env_type must be: gym | atari-ram | atari | lab"
+            assert False, "env_type must be: gym | atari-ram | atari | rle | lab"
 
 class ModelParams(Params):  # settings for network architecture
     def __init__(self):
@@ -126,6 +127,8 @@ class MemoryParams(Params):     # settings for replay memory
         elif self.env_type == "atari-ram":
             self.memory_size = 1000000
         elif self.env_type == "atari":
+            self.memory_size = 1000000
+        elif self.env_type == "rle":
             self.memory_size = 1000000
         elif self.env_type == "lab":
             self.memory_size = 1000000
@@ -171,7 +174,8 @@ class AgentParams(Params):  # hyperparameters for drl agents
             self.memory_interval     = 1
             self.train_interval      = 1
         elif self.agent_type == "dqn" and self.env_type == "atari-ram" or \
-             self.agent_type == "dqn" and self.env_type == "atari":
+             self.agent_type == "dqn" and self.env_type == "atari" or \
+             self.agent_type == "dqn" and self.env_type == "rle":
             self.steps               = 50000000 # max #iterations
             self.early_stop          = None     # max #steps per episode
             self.gamma               = 0.99
@@ -194,7 +198,8 @@ class AgentParams(Params):  # hyperparameters for drl agents
             self.memory_interval     = 1
             self.train_interval      = 4
         elif self.agent_type == "a3c" and self.env_type == "atari-ram" or \
-             self.agent_type == "a3c" and self.env_type == "atari":
+             self.agent_type == "a3c" and self.env_type == "atari" or \
+             self.agent_type == "a3c" and self.env_type == "rle":
             self.steps               = 20000000 # max #iterations
             self.early_stop          = None     # max #steps per episode
             self.gamma               = 0.99
